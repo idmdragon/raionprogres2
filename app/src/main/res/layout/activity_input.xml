@@ -131,10 +131,10 @@
 
     <TextView
         android:id="@+id/textTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="27dp"
         android:layout_marginTop="24dp"
-        android:text="Pemasukan"
+        android:text="Pengeluaran"
         android:textColor="#000"
         android:textSize="20dp"
         android:textStyle="bold"
@@ -185,7 +185,7 @@
         android:layout_marginEnd="28dp"
         android:text=""
         android:textAllCaps="true"
-        android:textColor="#FDA300"
+        android:textColor="#D55252"
         android:textSize="35dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnAdd" />
@@ -321,7 +321,7 @@
         app:layout_constraintStart_toEndOf="@+id/btn0" />
 
     <Button
-        android:id="@+id/btncalender"
+        android:id="@+id/btnCalender"
         android:layout_width="105dp"
         android:layout_height="65dp"
         android:background="@color/number"
@@ -406,13 +406,12 @@
         app:layout_constraintTop_toBottomOf="@+id/textTitle" />
 
     <Button
-        android:id="@+id/inputKategori2"
+        android:id="@+id/btnDate"
         android:layout_width="399dp"
         android:layout_height="50dp"
         android:layout_marginTop="196dp"
         android:background="@android:color/transparent"
         android:drawableEnd="@drawable/ic_chevron_right_black_24dp"
-        android:text="Hari ini"
         android:textAlignment="textEnd"
         android:textAllCaps="false"
         android:textColor="#FDA300"
@@ -432,6 +431,20 @@
         android:textSize="25dp"
         app:layout_constraintEnd_toEndOf="@+id/inputKategori"
         app:layout_constraintTop_toBottomOf="@+id/viewInput" />
+
+    <TextView
+        android:id="@+id/viewDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="36dp"
+        android:fontFamily="sans-serif"
+        android:text=""
+        android:textColor="#FDA300"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnDate" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

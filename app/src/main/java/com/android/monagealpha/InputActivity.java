@@ -1,31 +1,48 @@
 package com.android.monagealpha;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class InputActivity extends AppCompatActivity {
-    Button btnAdd,btnBack,btnKategori;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+
+public class InputActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+    Button btnAdd,btnBack,btnKategori,btnDate,checkcircle,btnCalender;
     Kategori kategori;
-    DataHelper myDb;
     Button btn0,btn1,btn2,btn3,btn4,btn5,btn6,btn7,btn8,btn9,btnC;
-    String input = "IDR ",jumlahUang;
-    TextView viewInput,viewKategori;
+    String input = "-IDR ",jumlahUang,jenis;
+    TextView viewInput,viewKategori,viewDate,textTitle;
     ArrayList<String> jumlah;
     SwitchCompat switchbuttonin;
+    String dateTime,date;
+    int pemasukan=0,pengeluaran=0,saldo=Prevalent.currentOnlineUser.getSaldo();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +59,8 @@ public class InputActivity extends AppCompatActivity {
         btn8 = findViewById(R.id.btn8);
         btn9 = findViewById(R.id.btn9);
         btnC = findViewById(R.id.btnC);
+        btnCalender = findViewById(R.id.btnCalender);
+        checkcircle = findViewById(R.id.checkcircle);
         jumlah = new ArrayList<>();
         viewInput = findViewById(R.id.viewInput);
         btnAdd = findViewById(R.id.btnAdd);
@@ -49,12 +68,27 @@ public class InputActivity extends AppCompatActivity {
         btnKategori = findViewById(R.id.inputKategori);
         viewKategori = findViewById(R.id.viewKategori);
         kategori = new Kategori();
-        myDb = new DataHelper(this);
+        viewInput.setText("-IDR ");
+        viewDate = findViewById(R.id.viewDate);
+        btnDate = findViewById(R.id.btnDate);
+        textTitle = findViewById(R.id.textTitle);
         viewKategori.setText(kategori.getKategori());
-        openKategori();
-        addData();
+        openKategori();openCalender();
         back();
         add0();add1();add2();add3();add4();add5();add6();add7();add8();add9();addC();
+
+        checkcircle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addData();
+            }
+        });
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addData();
+            }
+        });
 
         //switch buttton
         switchbuttonin= findViewById(R.id.switchbutton);
@@ -62,31 +96,95 @@ public class InputActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(switchbuttonin.isChecked()){
-                    Intent intent = new Intent(InputActivity.this,InputActivity2.class);
-                    startActivity(intent);
+                    textTitle.setText("Pemasukan");
+                    input = "IDR ";
+                    viewInput.setText("IDR ");
+                    viewInput.setTextColor(Color.parseColor("#FDA300"));
+                }else{
+                    textTitle.setText("Pengeluaran");
+                    input = "-IDR ";
+                    viewInput.setTextColor(Color.parseColor("#D55252"));
                 }
             }
         });
+        openDate();
 
+    }
+
+    private void openDate(){
+        btnDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker();
+            }
+        });
+    }
+    private void showDatePicker(){
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,this,
+                Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH),
+                Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
+    }
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+        date = dayOfMonth+"-"+month+"-"+year;
+        viewDate.setText(date);
 
     }
     public  void addData(){
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
                 jumlahUang = "";
-                for(int i = 0; i<jumlah.size();i++)
+                final DatabaseReference Rootref = FirebaseDatabase.getInstance().getReference();
+                Rootref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Users userData = dataSnapshot.child("Users").child(Prevalent.currentOnlineUser.getEmail()).getValue(Users.class);
+                        Prevalent.currentOnlineUser = userData;
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                for(int i = 0; i<jumlah.size();i++){
                     jumlahUang += jumlah.get(i);
-                boolean isInserted = myDb.insertData("Makanan",Integer.parseInt(jumlahUang));
-                if(isInserted=true){
-                    Toast.makeText(InputActivity.this, "Uang Ditambah:)", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(InputActivity.this, "Data belum dimasukkan", Toast.LENGTH_SHORT).show();
                 }
-                input = "IDR ";
+                if(switchbuttonin.isChecked()){
+                    input = "IDR ";
+                    jenis = "Pemasukan";
+                    pemasukan += (Prevalent.currentOnlineUser.getPemasukan() + Integer.parseInt(jumlahUang));
+                    saldo += Integer.parseInt(jumlahUang);
+
+                }else {
+                    input = "-IDR";
+                    jenis = "Pengeluaran";
+                    pengeluaran += (Prevalent.currentOnlineUser.getPengeluaran()+Integer.parseInt(jumlahUang));
+                    saldo -= Integer.parseInt(jumlahUang);
+
+                };
+                HashMap<String, Object> userdataMap = new HashMap<>();
+                userdataMap.put("pemasukan",pemasukan);
+                userdataMap.put("pengeluaran",pengeluaran);
+                userdataMap.put("saldo",saldo);
+                Rootref.child("Users").child(Prevalent.currentOnlineUser.getEmail()).child("History").child(date).updateChildren(userdataMap);
+                if (switchbuttonin.isChecked()){
+                    input="IDR ";
+                    Rootref.child("Users").child(Prevalent.currentOnlineUser.getEmail()).child("pemasukan")
+                            .setValue(pemasukan);
+                }
+                else {
+                    input="-IDR ";
+                    Rootref.child("Users").child(Prevalent.currentOnlineUser.getEmail()).child("pengeluaran")
+                            .setValue(pengeluaran);
+                }
+                Rootref.child("Users").child(Prevalent.currentOnlineUser.getEmail()).child("saldo")
+                        .setValue(saldo);
                 viewInput.setText(input);
-            }
-        });
+                Intent intent = new Intent(InputActivity.this,MainActivity.class);
+                startActivity(intent);
     }
     public void back(){
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -201,12 +299,21 @@ public class InputActivity extends AppCompatActivity {
             }
         });
     }
+
     public void openKategori(){
         btnKategori.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(InputActivity.this,KategoriActivity.class);
                 startActivity(intent);
+            }
+        });
+    }
+    public void openCalender(){
+        btnCalender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker();
             }
         });
     }

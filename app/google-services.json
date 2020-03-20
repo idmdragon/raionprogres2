@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1075981783137",
+    "firebase_url": "https://monage-567bc.firebaseio.com",
+    "project_id": "monage-567bc",
+    "storage_bucket": "monage-567bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075981783137:android:41b459102b82d77a815a20",
+        "android_client_info": {
+          "package_name": "com.android.monagealpha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075981783137-mo54p2qi6gb13lkop5n6n1oslp0mnhoi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.monagealpha",
+            "certificate_hash": "a3a9b1471cd9e66d8f4a8e34164c5eaaadf24e0a"
+          }
+        },
+        {
+          "client_id": "1075981783137-ili512acuvo93hignm6unj8p41639l6v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr-k8Amx_GFPCRbsa9zfs7FV6u4q-qCyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075981783137-ili512acuvo93hignm6unj8p41639l6v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
